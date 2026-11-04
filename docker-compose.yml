@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PYWB_BASE_URL: ${PYWB_BASE_URL:-http://localhost:8080}
+    ports:
+      - "${WEB_PORT:-9020}:9020"
+    depends_on:
+      - pywb
+    restart: unless-stopped
+
+  pywb:
+    image: python:3.11-slim
+    working_dir: /srv/pywb
+    command: >
+      sh -c "pip install --no-cache-dir 'pywb>=2.8,<3' &&
+             (wb-manager init archive || true) &&
+             wayback --host 0.0.0.0 --port 8080"
+    ports:
+      - "${PYWB_PORT:-8080}:8080"
+    volumes:
+      - ./pywb:/srv/pywb
+      - ./archives:/webarchive
+    restart: unless-stopped
