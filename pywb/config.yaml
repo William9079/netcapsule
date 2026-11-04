@@ -1,0 +1,4 @@
+collections:
+  archive:
+    index: live
+    archive_paths: /webarchive
